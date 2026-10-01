@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Person } from '../../types/Person';
 
 interface Props {
@@ -16,19 +16,10 @@ export const ComboBox: React.FC<Props> = ({
   const [debouncedValue, setDebouncedValue] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const previousQueryRef = useRef('');
 
   useEffect(() => {
-    const trimmedValue = inputValue.trim();
-
-    if (trimmedValue === previousQueryRef.current) {
-      return undefined;
-    }
-
-    previousQueryRef.current = trimmedValue;
-
     const timeoutId = window.setTimeout(() => {
-      setDebouncedValue(trimmedValue);
+      setDebouncedValue(inputValue.trim());
     }, delay);
 
     return () => window.clearTimeout(timeoutId);
@@ -62,15 +53,12 @@ export const ComboBox: React.FC<Props> = ({
     setSelectedPerson(person);
     setInputValue(person.name);
     setDebouncedValue(person.name.trim());
-    previousQueryRef.current = person.name.trim();
     setIsOpen(false);
     onSelected?.(person);
   };
 
   const handleBlur = () => {
-    window.setTimeout(() => {
-      setIsOpen(false);
-    }, 100);
+    setIsOpen(false);
   };
 
   return (
